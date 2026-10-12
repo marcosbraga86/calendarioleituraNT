@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Calendário de Leitura Digital</title>
+<style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+--bg:#eef4fb;--card:#fff;--ink:#14263d;--mut:#5d7390;--acc:#1f5fae;--ok:#2e8b57;--line:#cfdcec}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0e1a2b;--card:#15263d;--ink:#e6eef8;--mut:#93a9c4;--acc:#6aa8ee;--ok:#5fc18a;--line:#25405f}}
+:root[data-theme="dark"]{--bg:#0e1a2b;--card:#15263d;--ink:#e6eef8;--mut:#93a9c4;--acc:#6aa8ee;--ok:#5fc18a;--line:#25405f}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+:root{--h1:#17498a;--h2:#2f86e0;--sh:0 4px 14px rgba(20,60,120,.10)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--h1:#0f2d57;--h2:#1c4e8a;--sh:0 4px 16px rgba(0,0,0,.35)}}
+:root[data-theme="dark"]{--h1:#0f2d57;--h2:#1c4e8a;--sh:0 4px 16px rgba(0,0,0,.35)}
+*{box-sizing:border-box}
+body{margin:0;color:var(--ink);font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;line-height:1.45;
+background:radial-gradient(900px 380px at 50% -120px,color-mix(in srgb,var(--acc) 20%,transparent),transparent),var(--bg)}
+main{max-width:640px;margin:0 auto;padding:14px 14px 40px}
+.head{display:flex;align-items:center;gap:14px;padding:18px 16px;border-radius:20px;color:#fff;margin:4px 0 14px;
+background:linear-gradient(135deg,var(--h1),var(--h2));box-shadow:var(--sh);position:relative;flex-wrap:wrap}
+.head img{width:76px;height:76px;border-radius:50%;background:#fff;border:3px solid rgba(255,255,255,.85);box-shadow:0 2px 10px rgba(0,0,0,.25);flex:none;object-fit:cover}
+.head h1{margin:0;font-family:Georgia,'Times New Roman',serif;font-size:1.45rem;line-height:1.15;color:#fff;letter-spacing:.2px}
+.head .sub{margin:5px 0 0;color:rgba(255,255,255,.82);font-size:.8rem}
+.head button{position:absolute;top:10px;right:10px;background:rgba(255,255,255,.18);color:#fff;border:1px solid rgba(255,255,255,.4);border-radius:20px;padding:4px 11px;font-size:.78rem;backdrop-filter:blur(4px)}
+.head>div{min-width:0;flex:1;padding-top:14px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px;margin-bottom:14px;box-shadow:var(--sh)}
+.prog{display:flex;align-items:center;gap:16px}
+.ring{--p:0;width:84px;height:84px;border-radius:50%;flex:none;display:grid;place-items:center;
+background:conic-gradient(var(--ok) calc(var(--p)*1%),var(--line) 0)}
+.ring span{width:66px;height:66px;border-radius:50%;background:var(--card);display:grid;place-items:center;font-weight:700;font-size:1.05rem;color:var(--acc)}
+.stat{font-weight:600;font-size:1rem}.stat2{color:var(--mut);font-size:.85rem;margin-top:2px}
+.bar{height:8px;background:var(--line);border-radius:6px;overflow:hidden;margin:14px 0}
+.bar>i{display:block;height:100%;background:linear-gradient(90deg,var(--acc),var(--ok));width:0;transition:width .4s}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+button,select,input{font:inherit;color:var(--ink)}
+button,select,input[type=text]{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:8px 12px}
+button{cursor:pointer}
+.prim{background:linear-gradient(135deg,var(--h1),var(--h2));color:#fff;border:0;font-weight:600;box-shadow:var(--sh)}
+label.stat{font-weight:400;font-size:.85rem;color:var(--mut)}
+.day{display:flex;gap:12px;align-items:flex-start;padding:14px;border:1px solid var(--line);border-left:5px solid var(--line);border-radius:14px;margin-bottom:10px;background:var(--card);box-shadow:var(--sh);transition:transform .15s}
+.day.done{border-left-color:var(--ok);opacity:.7}
+.day.done .dn{text-decoration:line-through;text-decoration-color:var(--mut)}
+.day.next{border-left-color:var(--acc);box-shadow:0 0 0 2px color-mix(in srgb,var(--acc) 35%,transparent),var(--sh)}
+.day input[type=checkbox]{width:26px;height:26px;margin-top:3px;accent-color:var(--ok);flex:none}
+.dk{font-size:.72rem;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--acc)}
+.day.next .dk::after{content:" · próximo";color:var(--ok)}
+.dn{font-weight:600;font-size:1.05rem;margin-top:1px}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.chips a{text-decoration:none;color:var(--acc);background:color-mix(in srgb,var(--acc) 10%,transparent);border:1px solid color-mix(in srgb,var(--acc) 40%,transparent);border-radius:20px;padding:4px 12px;font-size:.85rem;font-weight:500}
+.chips a:active{transform:scale(.97)}
+details{margin-top:12px}
+summary{cursor:pointer;color:var(--mut);font-size:.9rem}
+.hint{font-size:.8rem;color:var(--mut)}
+.day>div:last-child{flex:1;min-width:0}
+.notes summary{margin-top:10px;color:var(--acc);font-weight:600;font-size:.85rem}
+.notes textarea{width:100%;margin:8px 0;padding:10px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink);font:inherit;font-size:.92rem;resize:vertical}
+.notes button{font-size:.8rem;padding:5px 10px}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(18px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--bg);padding:9px 16px;border-radius:20px;font-size:.85rem;opacity:0;pointer-events:none;transition:opacity .25s;max-width:90%;text-align:center}
+.toast.on{opacity:.95}
+.foot{text-align:center;color:var(--mut);font-size:.75rem;margin-top:18px}
+</style>
+</head>
+<body>
+<main>
+<div class="head">
+  <img alt="Igreja Batista Regular do Novo Juazeiro" src="data:image/jpeg;base64,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">
+  <div><h1>Calendário de Leitura Digital</h1><p class="sub">Novo Testamento · Igreja Batista Regular do Novo Juazeiro</p></div>
+  <button id="theme" type="button"></button>
+</div>
+
+<div class="card">
+  <div class="prog"><div class="ring" id="ring"><span id="pct">0%</span></div><div><div class="stat" id="stat"></div><div class="stat2" id="stat2"></div></div></div>
+  <div class="bar"><i id="fill"></i></div>
+  <div class="row">
+    <button class="prim" id="goNext">Ir para o próximo dia</button>
+    <label class="stat">Capítulos por dia
+      <select id="per"><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select>
+    </label>
+  </div>
+  <div class="row" style="margin-top:10px"><button id="expAll" type="button">Exportar todas as anotações</button></div>
+  <details>
+    <summary>Configurações</summary>
+    <p class="hint">Se os links não abrirem a versão ARA, copie o número da versão da barra de endereço do YouVersion (bible.com/bible/<b>NÚMERO</b>/JHN.3.ARA) e cole aqui.</p>
+    <div class="row">
+      <input type="text" id="ver" size="8" inputmode="numeric">
+      <button id="saveVer">Salvar versão</button>
+      <button id="reset">Zerar progresso</button>
+    </div>
+  </details>
+</div>
+
+<div id="list"></div>
+<p class="foot">Texto e áudio: YouVersion (ARA) · Igreja Batista Regular do Novo Juazeiro</p>
+</main>
+
+<div id="toast" class="toast"></div>
+<script>
+const BOOKS=[["MAT","Mateus",28],["MRK","Marcos",16],["LUK","Lucas",24],["JHN","João",21],["ACT","Atos",28],["ROM","Romanos",16],["1CO","1 Coríntios",16],["2CO","2 Coríntios",13],["GAL","Gálatas",6],["EPH","Efésios",6],["PHP","Filipenses",4],["COL","Colossenses",4],["1TH","1 Tessalonicenses",5],["2TH","2 Tessalonicenses",3],["1TI","1 Timóteo",6],["2TI","2 Timóteo",4],["TIT","Tito",3],["PHM","Filemom",1],["HEB","Hebreus",13],["JAS","Tiago",5],["1PE","1 Pedro",5],["2PE","2 Pedro",3],["1JN","1 João",5],["2JN","2 João",1],["3JN","3 João",1],["JUD","Judas",1],["REV","Apocalipse",22]];
+const CH=[];BOOKS.forEach(([c,n,t])=>{for(let i=1;i<=t;i++)CH.push({code:c,name:n,ch:i,key:c+"."+i})});
+const KEY="leitura-nt-v1";
+let S={per:1,ver:"1608",done:{},notes:{}};
+try{const r=localStorage.getItem(KEY);if(r)S=Object.assign(S,JSON.parse(r))}catch(e){}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+const $=id=>document.getElementById(id);
+function days(){const out=[];for(let i=0;i<CH.length;i+=S.per)out.push(CH.slice(i,i+S.per));return out}
+function isDone(d){return d.every(c=>S.done[c.key])}
+function label(d){const f=d[0],l=d[d.length-1];return f.name===l.name?(f.ch===l.ch?`${f.name} ${f.ch}`:`${f.name} ${f.ch}–${l.ch}`):`${f.name} ${f.ch} a ${l.name} ${l.ch}`}
+function url(c){return `https://www.bible.com/bible/${S.ver}/${c.code}.${c.ch}.ARA`}
+function render(){
+  const D=days(),n=CH.filter(c=>S.done[c.key]).length,nd=D.filter(isDone).length;
+  const nextIdx=D.findIndex(d=>!isDone(d));
+  const pc=Math.round(n/CH.length*100);
+  $("stat").textContent=`${nd} de ${D.length} dias concluídos`;$("stat2").textContent=`${n} de ${CH.length} capítulos lidos`;
+  $("ring").style.setProperty("--p",pc);$("pct").textContent=pc+"%";
+  $("fill").style.width=(n/CH.length*100)+"%";
+  $("per").value=S.per;$("ver").value=S.ver;
+  const L=$("list");L.innerHTML="";
+  D.forEach((d,i)=>{
+    const el=document.createElement("div");
+    el.className="day"+(isDone(d)?" done":"")+(i===nextIdx?" next":"");
+    el.id="d"+i;
+    const cb=document.createElement("input");cb.type="checkbox";cb.checked=isDone(d);
+    cb.onchange=()=>{d.forEach(c=>{if(cb.checked)S.done[c.key]=1;else delete S.done[c.key]});save();render()};
+    const box=document.createElement("div");
+    box.innerHTML=`<div class="dk">Dia ${i+1}</div><div class="dn">${label(d)}</div>`;
+    const chips=document.createElement("div");chips.className="chips";
+    d.forEach(c=>{const a=document.createElement("a");a.href=url(c);a.target="_blank";a.rel="noopener";a.textContent=`📖 🎧 ${c.name} ${c.ch}`;chips.appendChild(a)});
+    box.appendChild(chips);
+    const nk=d[0].key,det=document.createElement("details");det.className="notes";det.open=openSet.has(nk);
+    det.ontoggle=()=>{det.open?openSet.add(nk):openSet.delete(nk)};
+    const sm=document.createElement("summary"),mark=()=>{sm.textContent="Anotações"+(S.notes[nk]?" · com texto":"")};mark();
+    const ta=document.createElement("textarea");ta.rows=4;ta.placeholder="Escreva aqui suas anotações do dia…";ta.value=S.notes[nk]||"";
+    ta.oninput=()=>{const v=ta.value;if(v.trim())S.notes[nk]=v;else delete S.notes[nk];save();mark()};
+    const ex=document.createElement("button");ex.type="button";ex.textContent="Exportar este dia";
+    ex.onclick=()=>{const t=(S.notes[nk]||"").trim();if(!t){toast("Este dia ainda não tem anotação.");return}
+      saveFile(`anotacao-dia-${i+1}.txt`,`${HEAD}\nDia ${i+1} · ${label(d)}\n\n${t}\n`)};
+    det.append(sm,ta,ex);box.appendChild(det);el.appendChild(cb);el.appendChild(box);L.appendChild(el);
+  });
+  return nextIdx;
+}
+$("per").onchange=e=>{S.per=+e.target.value;save();render()};
+$("saveVer").onclick=()=>{const v=$("ver").value.trim();if(/^\d+$/.test(v)){S.ver=v;save();render()}};
+$("reset").onclick=()=>{if(confirm("Zerar todo o progresso?")){S.done={};save();render()}};
+$("goNext").onclick=()=>{const i=render();const el=$("d"+(i<0?0:i));if(el)el.scrollIntoView({behavior:"smooth",block:"center"})};
+function applyTheme(t){document.documentElement.setAttribute("data-theme",t);const a='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:5px">';const sun=a+'<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>';const moon=a+'<path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>';$("theme").innerHTML=t==="dark"?sun+"Tema claro":moon+"Tema escuro"}
+const openSet=new Set();
+const HEAD="Calendário de Leitura Digital - Igreja Batista Regular do Novo Juazeiro";
+let tt;function toast(m){const e=$("toast");e.textContent=m;e.classList.add("on");clearTimeout(tt);tt=setTimeout(()=>e.classList.remove("on"),3000)}
+async function saveFile(name,text){
+  let dl=null;try{dl=window.claude&&await claude.use("downloads")}catch(e){}
+  if(dl){try{await dl.save({filename:name,data:text});return}catch(e){if(e&&e.code==="declined")return}}
+  try{await navigator.clipboard.writeText(text);toast("Download indisponível aqui. Texto copiado.")}catch(e){toast("Não foi possível exportar.")}
+}
+function allNotes(){const D=days(),used=new Set(),out=[];
+  D.forEach((d,i)=>{const t=S.notes[d[0].key];if(t&&t.trim()){used.add(d[0].key);out.push(`Dia ${i+1} · ${label(d)}\n${t.trim()}`)}});
+  CH.forEach(c=>{const t=S.notes[c.key];if(t&&t.trim()&&!used.has(c.key))out.push(`${c.name} ${c.ch}\n${t.trim()}`)});
+  return out}
+$("expAll").onclick=()=>{const a=allNotes();if(!a.length){toast("Ainda não há anotações.");return}
+  saveFile("anotacoes-calendario-leitura.txt",`${HEAD}\nExportado em ${new Date().toLocaleDateString("pt-BR")}\n\n`+a.join("\n\n----------\n\n")+"\n")};
+let curTheme=S.theme||(window.matchMedia&&matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light");
+applyTheme(curTheme);
+$("theme").onclick=()=>{curTheme=curTheme==="dark"?"light":"dark";S.theme=curTheme;save();applyTheme(curTheme)};
+render();
+</script>
+</body>
+</html>
